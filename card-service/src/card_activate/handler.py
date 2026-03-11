@@ -11,14 +11,13 @@ def lambda_handler(event, context):
         body    = json.loads(event['body'])
         user_id = body['userId']
 
-        # 1. Buscar la tarjeta de crédito PENDING del usuario
-        response = card_table.scan(
+        # Buscar la tarjeta de crédito PENDING del usuario
+        credit_response = card_table.scan(
             FilterExpression=Attr('user_id').eq(user_id) &
                              Attr('status').eq('PENDING') &
                              Attr('type').eq('CREDIT')
         )
-
-        cards = response.get('Items', [])
+        cards = credit_response.get('Items', [])
 
         if not cards:
             return {
@@ -31,15 +30,31 @@ def lambda_handler(event, context):
         card    = cards[0]
         card_id = card['uuid']
 
-        # 2. Contar las transacciones de esa tarjeta
+        # Buscar la tarjeta DÉBITO del usuario
+        debit_response = card_table.scan(
+            FilterExpression=Attr('user_id').eq(user_id) &
+                             Attr('type').eq('DEBIT')
+        )
+        debit_cards = debit_response.get('Items', [])
+
+        if not debit_cards:
+            return {
+                "statusCode": 404,
+                "body": json.dumps({"message": "No se encontró tarjeta débito del usuario"})
+            }
+
+        debit_card_id = debit_cards[0]['uuid']
+
+        # Contar transacciones PURCHASE de la tarjeta débito
         tx_response = transaction_table.scan(
-            FilterExpression=Attr('cardId').eq(card_id)
+            FilterExpression=Attr('cardId').eq(debit_card_id) &
+                             Attr('type').eq('PURCHASE')
         )
 
         transaction_count = len(tx_response.get('Items', []))
-        print(f"Tarjeta {card_id} tiene {transaction_count} transacciones")
+        print(f"Tarjeta débito {debit_card_id} tiene {transaction_count} compras")
 
-        # 3. Validar si tiene suficientes transacciones
+        # Validar si tiene suficientes transacciones
         if transaction_count < 10:
             return {
                 "statusCode": 400,
@@ -48,7 +63,7 @@ def lambda_handler(event, context):
                 })
             }
 
-        # 4. Activar la tarjeta
+        # Activar la tarjeta de crédito
         card_table.update_item(
             Key={
                 "uuid":      card_id,
@@ -62,7 +77,7 @@ def lambda_handler(event, context):
         return {
             "statusCode": 200,
             "body": json.dumps({
-                "message": "Tarjeta activada exitosamente",
+                "message": "Tarjeta de crédito activada exitosamente",
                 "cardId":  card_id
             })
         }
