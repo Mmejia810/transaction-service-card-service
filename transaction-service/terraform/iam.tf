@@ -34,6 +34,16 @@ resource "aws_iam_role_policy" "transaction_lambda_policy" {
       {
         Effect = "Allow"
         Action = [
+          "sqs:SendMessage",
+          "sqs:ReceiveMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "s3:PutObject",
           "s3:GetObject",
           "s3:ListBucket"
