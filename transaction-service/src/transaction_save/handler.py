@@ -7,6 +7,7 @@ from boto3.dynamodb.conditions import Attr
 from decimal import Decimal
 
 dynamodb = boto3.resource('dynamodb')
+sqs = boto3.client('sqs', region_name='us-east-1')
 card_table        = dynamodb.Table(os.environ['CARD_TABLE'])
 transaction_table = dynamodb.Table(os.environ['TRANSACTION_TABLE'])
 
@@ -64,6 +65,22 @@ def lambda_handler(event, context):
             "type":      "SAVING",
             "createdAt": created_at
         })
+
+        # 5. Enviar notificación TRANSACTION.SAVE
+        try:
+            sqs.send_message(
+                QueueUrl=os.environ.get('NOTIFICATION_QUEUE_URL'),
+                MessageBody=json.dumps({
+                    "type": "TRANSACTION.SAVE",
+                    "data": {
+                        "date":     created_at,
+                        "merchant": merchant,
+                        "amount":   str(amount)
+                    }
+                })
+            )
+        except Exception as notif_error:
+            print(f"[ERROR] Notificación TRANSACTION.SAVE falló: {notif_error}")
 
         return {
             "statusCode": 200,

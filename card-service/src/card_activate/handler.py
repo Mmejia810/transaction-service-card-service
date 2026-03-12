@@ -1,8 +1,11 @@
 import json
 import boto3
+import os
+from datetime import datetime, timezone
 from boto3.dynamodb.conditions import Attr
 
 dynamodb = boto3.resource('dynamodb')
+sqs = boto3.client('sqs', region_name='us-east-1')
 card_table = dynamodb.Table('card-table')
 transaction_table = dynamodb.Table('transaction-table')
 
@@ -73,6 +76,22 @@ def lambda_handler(event, context):
             ExpressionAttributeNames={"#s": "status"},
             ExpressionAttributeValues={":status": "ACTIVATED"}
         )
+
+        # Enviar notificación CARD.ACTIVATE
+        try:
+            sqs.send_message(
+                QueueUrl=os.environ.get('NOTIFICATION_QUEUE_URL'),
+                MessageBody=json.dumps({
+                    "type": "CARD.ACTIVATE",
+                    "data": {
+                        "date":   datetime.now(timezone.utc).isoformat(),
+                        "type":   "CREDIT",
+                        "amount": str(card.get('balance', '0'))
+                    }
+                })
+            )
+        except Exception as notif_error:
+            print(f"[ERROR] Notificación CARD.ACTIVATE falló: {notif_error}")
 
         return {
             "statusCode": 200,

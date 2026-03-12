@@ -43,6 +43,7 @@ resource "aws_lambda_function" "transaction_purchase" {
     variables = {
       CARD_TABLE        = "card-table"
       TRANSACTION_TABLE = "transaction-table"
+      NOTIFICATION_QUEUE_URL = "https://sqs.us-east-1.amazonaws.com/825982958931/notification-email-sqs"
     }
   }
 }
@@ -60,6 +61,7 @@ resource "aws_lambda_function" "transaction_save" {
     variables = {
       CARD_TABLE        = "card-table"
       TRANSACTION_TABLE = "transaction-table"
+      NOTIFICATION_QUEUE_URL = "https://sqs.us-east-1.amazonaws.com/825982958931/notification-email-sqs"
     }
   }
 }
@@ -77,6 +79,7 @@ resource "aws_lambda_function" "transaction_paid" {
     variables = {
       CARD_TABLE        = "card-table"
       TRANSACTION_TABLE = "transaction-table"
+      NOTIFICATION_QUEUE_URL = "https://sqs.us-east-1.amazonaws.com/825982958931/notification-email-sqs"
     }
   }
 }
@@ -95,6 +98,7 @@ resource "aws_lambda_function" "card_get_report" {
       REPORTS_BUCKET    = aws_s3_bucket.reports_bucket.bucket
       CARD_TABLE        = "card-table"
       TRANSACTION_TABLE = "transaction-table"
+      NOTIFICATION_QUEUE_URL = "https://sqs.us-east-1.amazonaws.com/825982958931/notification-email-sqs"
     }
   }
 }

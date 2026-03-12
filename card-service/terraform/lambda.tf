@@ -33,6 +33,12 @@ resource "aws_lambda_function" "card_approval_worker" {
   runtime          = "python3.11"
   timeout          = 30
   source_code_hash = data.archive_file.approval_worker_zip.output_base64sha256
+
+    environment {
+    variables = {
+      NOTIFICATION_QUEUE_URL = "https://sqs.us-east-1.amazonaws.com/825982958931/notification-email-sqs"
+    }
+  }
 }
 
 # Lambda para activar tarjeta de crédito
@@ -44,6 +50,12 @@ resource "aws_lambda_function" "card_activate" {
   runtime          = "python3.11"
   timeout          = 15
   source_code_hash = data.archive_file.activate_zip.output_base64sha256
+
+    environment {
+    variables = {
+      NOTIFICATION_QUEUE_URL = "https://sqs.us-east-1.amazonaws.com/825982958931/notification-email-sqs"
+    }
+  }
 }
 
 # Lambda para manejar errores de la DLQ

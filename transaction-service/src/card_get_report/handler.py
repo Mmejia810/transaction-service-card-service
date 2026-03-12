@@ -8,6 +8,7 @@ from boto3.dynamodb.conditions import Attr
 from io import StringIO
 
 dynamodb = boto3.resource('dynamodb')
+sqs = boto3.client('sqs', region_name='us-east-1')
 s3 = boto3.client('s3')
 transaction_table = dynamodb.Table(os.environ['TRANSACTION_TABLE'])
 
@@ -46,7 +47,7 @@ def lambda_handler(event, context):
         csv_content = output.getvalue()
 
         # 4. Subir el CSV a S3
-        file_name = f"reports/{card_id}/{str(uuid.uuid4())}.csv"
+        file_name  = f"reports/{card_id}/{str(uuid.uuid4())}.csv"
         s3.put_object(
             Bucket      = BUCKET_NAME,
             Key         = file_name,
@@ -56,6 +57,22 @@ def lambda_handler(event, context):
 
         # 5. Generar URL publica
         report_url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{file_name}"
+        created_at = datetime.now(timezone.utc).isoformat()
+
+        # 6. Enviar notificación REPORT.ACTIVITY
+        try:
+            sqs.send_message(
+                QueueUrl=os.environ.get('NOTIFICATION_QUEUE_URL'),
+                MessageBody=json.dumps({
+                    "type": "REPORT.ACTIVITY",
+                    "data": {
+                        "date": created_at,
+                        "url":  report_url
+                    }
+                })
+            )
+        except Exception as notif_error:
+            print(f"[ERROR] Notificación REPORT.ACTIVITY falló: {notif_error}")
 
         return {
             "statusCode": 200,
