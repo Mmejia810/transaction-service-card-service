@@ -1,0 +1,13 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Zips generados (mejor que cada uno los genere o Terraform los maneje)
+*.zip
