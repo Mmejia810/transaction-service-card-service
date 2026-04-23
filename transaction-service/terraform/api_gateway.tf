@@ -191,6 +191,10 @@ resource "aws_api_gateway_deployment" "transaction_deploy" {
     aws_api_gateway_integration.save_integration,
     aws_api_gateway_integration.paid_integration,
     aws_api_gateway_integration.report_integration,
+    aws_api_gateway_integration_response.options_purchase,
+    aws_api_gateway_integration_response.options_save,
+    aws_api_gateway_integration_response.options_paid,
+    aws_api_gateway_integration_response.options_report,
   ]
 
   rest_api_id = aws_api_gateway_rest_api.transaction_api.id
@@ -232,4 +236,176 @@ output "paid_url" {
 
 output "report_url" {
   value = "${aws_api_gateway_stage.transaction_stage.invoke_url}/report/{card_id}"
+}
+
+# ── CORS: /transactions/purchase ──
+resource "aws_api_gateway_method" "options_purchase" {
+  rest_api_id   = aws_api_gateway_rest_api.transaction_api.id
+  resource_id   = aws_api_gateway_resource.transactions_purchase.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "options_purchase" {
+  rest_api_id = aws_api_gateway_rest_api.transaction_api.id
+  resource_id = aws_api_gateway_resource.transactions_purchase.id
+  http_method = aws_api_gateway_method.options_purchase.http_method
+  type        = "MOCK"
+  request_templates = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
+
+resource "aws_api_gateway_method_response" "options_purchase" {
+  rest_api_id = aws_api_gateway_rest_api.transaction_api.id
+  resource_id = aws_api_gateway_resource.transactions_purchase.id
+  http_method = aws_api_gateway_method.options_purchase.http_method
+  status_code = "200"
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+resource "aws_api_gateway_integration_response" "options_purchase" {
+  rest_api_id = aws_api_gateway_rest_api.transaction_api.id
+  resource_id = aws_api_gateway_resource.transactions_purchase.id
+  http_method = aws_api_gateway_method.options_purchase.http_method
+  status_code = "200"
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,Authorization'"
+    "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+  }
+  depends_on = [aws_api_gateway_integration.options_purchase]
+}
+
+# ── CORS: /transactions/save/{card_id} ──
+resource "aws_api_gateway_method" "options_save" {
+  rest_api_id   = aws_api_gateway_rest_api.transaction_api.id
+  resource_id   = aws_api_gateway_resource.transactions_save_card_id.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "options_save" {
+  rest_api_id = aws_api_gateway_rest_api.transaction_api.id
+  resource_id = aws_api_gateway_resource.transactions_save_card_id.id
+  http_method = aws_api_gateway_method.options_save.http_method
+  type        = "MOCK"
+  request_templates = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
+
+resource "aws_api_gateway_method_response" "options_save" {
+  rest_api_id = aws_api_gateway_rest_api.transaction_api.id
+  resource_id = aws_api_gateway_resource.transactions_save_card_id.id
+  http_method = aws_api_gateway_method.options_save.http_method
+  status_code = "200"
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+resource "aws_api_gateway_integration_response" "options_save" {
+  rest_api_id = aws_api_gateway_rest_api.transaction_api.id
+  resource_id = aws_api_gateway_resource.transactions_save_card_id.id
+  http_method = aws_api_gateway_method.options_save.http_method
+  status_code = "200"
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,Authorization'"
+    "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+  }
+  depends_on = [aws_api_gateway_integration.options_save]
+}
+
+# ── CORS: /card/paid/{card_id} ──
+resource "aws_api_gateway_method" "options_paid" {
+  rest_api_id   = aws_api_gateway_rest_api.transaction_api.id
+  resource_id   = aws_api_gateway_resource.card_paid_card_id.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "options_paid" {
+  rest_api_id = aws_api_gateway_rest_api.transaction_api.id
+  resource_id = aws_api_gateway_resource.card_paid_card_id.id
+  http_method = aws_api_gateway_method.options_paid.http_method
+  type        = "MOCK"
+  request_templates = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
+
+resource "aws_api_gateway_method_response" "options_paid" {
+  rest_api_id = aws_api_gateway_rest_api.transaction_api.id
+  resource_id = aws_api_gateway_resource.card_paid_card_id.id
+  http_method = aws_api_gateway_method.options_paid.http_method
+  status_code = "200"
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+resource "aws_api_gateway_integration_response" "options_paid" {
+  rest_api_id = aws_api_gateway_rest_api.transaction_api.id
+  resource_id = aws_api_gateway_resource.card_paid_card_id.id
+  http_method = aws_api_gateway_method.options_paid.http_method
+  status_code = "200"
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,Authorization'"
+    "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+  }
+  depends_on = [aws_api_gateway_integration.options_paid]
+}
+
+# ── CORS: /report/{card_id} ──
+resource "aws_api_gateway_method" "options_report" {
+  rest_api_id   = aws_api_gateway_rest_api.transaction_api.id
+  resource_id   = aws_api_gateway_resource.card_report_id.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "options_report" {
+  rest_api_id = aws_api_gateway_rest_api.transaction_api.id
+  resource_id = aws_api_gateway_resource.card_report_id.id
+  http_method = aws_api_gateway_method.options_report.http_method
+  type        = "MOCK"
+  request_templates = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
+
+resource "aws_api_gateway_method_response" "options_report" {
+  rest_api_id = aws_api_gateway_rest_api.transaction_api.id
+  resource_id = aws_api_gateway_resource.card_report_id.id
+  http_method = aws_api_gateway_method.options_report.http_method
+  status_code = "200"
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+resource "aws_api_gateway_integration_response" "options_report" {
+  rest_api_id = aws_api_gateway_rest_api.transaction_api.id
+  resource_id = aws_api_gateway_resource.card_report_id.id
+  http_method = aws_api_gateway_method.options_report.http_method
+  status_code = "200"
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,Authorization'"
+    "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+  }
+  depends_on = [aws_api_gateway_integration.options_report]
 }

@@ -36,6 +36,12 @@ def lambda_handler(event, context):
         if not filtered:
             return {
                 "statusCode": 404,
+                          "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
                 "body": json.dumps({"message": "No se encontraron transacciones en ese rango"})
             }
 
@@ -76,6 +82,12 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
+            "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
             "body": json.dumps({
                 "message":    "Reporte generado exitosamente",
                 "reportUrl":  report_url,
@@ -87,5 +99,11 @@ def lambda_handler(event, context):
         print(f"Error: {str(e)}")
         return {
             "statusCode": 500,
+            "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
             "body": json.dumps({"message": f"Error interno: {str(e)}"})
         }

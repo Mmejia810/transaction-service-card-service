@@ -27,6 +27,12 @@ def lambda_handler(event, context):
         if not cards:
             return {
                 "statusCode": 404,
+                          "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
                 "body": json.dumps({"message": "Tarjeta no encontrada"})
             }
 
@@ -37,6 +43,12 @@ def lambda_handler(event, context):
         if card_type != "CREDIT":
             return {
                 "statusCode": 400,
+                "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
                 "body": json.dumps({"message": "Solo se puede pagar tarjetas de crédito"})
             }
 
@@ -55,12 +67,25 @@ def lambda_handler(event, context):
         if current_debt <= 0:
             return {
                 "statusCode": 400,
+                "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
                 "body": json.dumps({"message": "No tienes deuda pendiente"})
             }
 
         if amount > current_debt:
             return {
                 "statusCode": 400,
+                "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
+
                 "body": json.dumps({
                     "message": f"El pago excede la deuda. Deuda actual: {current_debt}"
                 })
@@ -97,6 +122,12 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
+            "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
             "body": json.dumps({
                 "message":       "Pago realizado exitosamente",
                 "amountPaid":    str(amount),
@@ -108,5 +139,11 @@ def lambda_handler(event, context):
         print(f"❌ Error: {str(e)}")
         return {
             "statusCode": 500,
+                      "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
             "body": json.dumps({"message": f"Error interno: {str(e)}"})
         }

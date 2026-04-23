@@ -27,6 +27,12 @@ def lambda_handler(event, context):
         if not cards:
             return {
                 "statusCode": 404,
+                "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
                 "body": json.dumps({"message": "Tarjeta no encontrada"})
             }
 
@@ -38,6 +44,12 @@ def lambda_handler(event, context):
         if card_type != "DEBIT":
             return {
                 "statusCode": 400,
+                          "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
                 "body": json.dumps({"message": "Solo se puede abonar saldo a tarjetas débito"})
             }
 
@@ -84,6 +96,12 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
+                      "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
             "body": json.dumps({
                 "message":    "Saldo agregado exitosamente",
                 "newBalance": str(new_balance)
@@ -94,5 +112,11 @@ def lambda_handler(event, context):
         print(f"❌ Error: {str(e)}")
         return {
             "statusCode": 500,
+                      "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
             "body": json.dumps({"message": f"Error interno: {str(e)}"})
         }

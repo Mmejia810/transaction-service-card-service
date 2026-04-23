@@ -27,6 +27,12 @@ def lambda_handler(event, context):
         if not cards:
             return {
                 "statusCode": 404,
+                          "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
                 "body": json.dumps({"message": "Tarjeta no encontrada"})
             }
 
@@ -39,6 +45,12 @@ def lambda_handler(event, context):
         if status != "ACTIVATED":
             return {
                 "statusCode": 400,
+                          "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
                 "body": json.dumps({"message": "La tarjeta no está activada"})
             }
 
@@ -47,6 +59,12 @@ def lambda_handler(event, context):
             if balance < amount:
                 return {
                     "statusCode": 400,
+                    "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
                     "body": json.dumps({
                         "message": f"Saldo insuficiente. Disponible: {balance}, Requerido: {amount}"
                     })
@@ -76,6 +94,12 @@ def lambda_handler(event, context):
             if amount > available:
                 return {
                     "statusCode": 400,
+                    "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
                     "body": json.dumps({
                         "message": f"Cupo insuficiente. Disponible: {available}, Requerido: {amount}"
                     })
@@ -113,6 +137,12 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
+            "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
             "body": json.dumps({
                 "message":       "Compra realizada exitosamente",
                 "transactionId": transaction_id,
@@ -125,5 +155,11 @@ def lambda_handler(event, context):
         print(f"❌ Error: {str(e)}")
         return {
             "statusCode": 500,
+                      "headers": {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+},
             "body": json.dumps({"message": f"Error interno: {str(e)}"})
         }
