@@ -88,3 +88,21 @@ resource "aws_lambda_event_source_mapping" "dlq_to_failed" {
   batch_size       = 5
   enabled          = true
 }
+
+
+# Lambda para obtener tarjetas del usuario
+data "archive_file" "get_cards_zip" {
+  type        = "zip"
+  source_dir  = "../src/card_get_cards"
+  output_path = "../src/zips/card_get_cards.zip"
+}
+
+resource "aws_lambda_function" "card_get_cards" {
+  filename         = data.archive_file.get_cards_zip.output_path
+  function_name    = "card-get-cards-lambda"
+  role             = aws_iam_role.card_lambda_role.arn
+  handler          = "handler.lambda_handler"
+  runtime          = "python3.11"
+  timeout          = 15
+  source_code_hash = data.archive_file.get_cards_zip.output_base64sha256
+}
